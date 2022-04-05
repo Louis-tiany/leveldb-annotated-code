@@ -6,6 +6,7 @@
 */
 
 #include <iostream>
+#include <ostream>
 #include <string>
 #include "db/dbformat.h"
 #include "leveldb/comparator.h"
@@ -14,54 +15,41 @@
 
 
 
-void* showInternalKey(void *arg) {
+void showInternalKey() {
     leveldb::Slice userkey("user");
     leveldb::InternalKey key(userkey, 10, leveldb::ValueType::kTypeValue);
     std::cout << key.DebugString() << std::endl;
-    std::string rep = key.Encode().data();
-    for(char re : rep) {
-        std::cout << static_cast<int>(re) << "\t";
-    }
-    std::cout << std::endl;
-
-    std::cout << std::string(key.user_key().data()) << std::endl;
-
-    std::cout << "===============" << std::endl;
 
     leveldb::ParsedInternalKey parseKey;
     leveldb::ParseInternalKey(key.Encode(), &parseKey);
     std::cout << parseKey.DebugString() << std::endl;
-    return nullptr;
 }
 
 void showComparator() {
 
-    std::cout << "===============" << std::endl;
-    std::cout << leveldb::BytewiseComparator() << std::endl;
-    auto kc = leveldb::BytewiseComparator();
+    const leveldb::Comparator *kc = leveldb::BytewiseComparator();
 
-    leveldb::Slice a("abcdefghijklmn12");
-    leveldb::Slice b("bcdefghijklmno13");
+    std::string str = "123hello";
+    leveldb::Slice sli = "123world";
 
-    std::string x = "helloworld";
-    b = "hellozoomer";
+    kc->FindShortestSeparator(&str, sli);
+    std::cout << str << std::endl;
 
-    kc->FindShortestSeparator(&x, b);
-    std::cout << x << std::endl;
-
-    x = "helloworld";
-    kc->FindShortSuccessor(&x);
-    std::cout << x << std::endl;
+    str = "123456";
+    kc->FindShortSuccessor(&str);
+    std::cout << str << std::endl;
 }
 
 void internalKeyComparatorTest() {
     leveldb::InternalKeyComparator ikc(leveldb::BytewiseComparator());
 
-
 }
 
-
-
+void parseKey() {
+    leveldb::Slice user_key("hello world");
+    leveldb::ParsedInternalKey pik(user_key, 1, leveldb::ValueType::kTypeValue);
+    std::cout << pik.DebugString() << std::endl;
+}
 
 int main(int argc, char *argv[])
 {
@@ -70,7 +58,8 @@ int main(int argc, char *argv[])
     });
     t.join();
     // std::cout << leveldb::BytewiseComparator() << std::endl;
-    showInternalKey(NULL);
+    parseKey();
+    showInternalKey();
     showComparator();
     return 0;
 }

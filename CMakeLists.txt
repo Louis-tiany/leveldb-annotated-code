@@ -239,7 +239,7 @@ add_executable(leveldbutil
 target_link_libraries(leveldbutil leveldb)
 
 add_executable(my_dbformat_test
-  "${PROJECT_SOURCE_DIR}/db/my_dbformat_test.cc"
+  "${PROJECT_SOURCE_DIR}/test/my_dbformat_test.cc"
 )
 
 target_compile_definitions(my_dbformat_test PRIVATE LEVELDB_PLATFORM_POSIX=1)
